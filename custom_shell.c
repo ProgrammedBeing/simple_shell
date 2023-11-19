@@ -1,45 +1,47 @@
 #include "main.h"
-#define BUFSIZE 1024
 
-void printPrompt(void) 
-{
-    printf("#cisfun$ ");
-}
-
-int main(void) 
+/**
+ * main- ENtry point.
+ *
+ * Return: Nothing.
+ */
+int main(void)
 {
 	pid_t pid;
-    char inputBuffer[BUFSIZE];
-    int status = 0;
+	char command[100];
+	int status;
 
-    while (1) {
-        printPrompt();
+	while (1)
+	{
+		printf("#cisfun$ ");
+		if (fgets(command, sizeof(command), stdin) == NULL)
+		{
+			printf("\n");
+			break;
+		}
 
-        if (fgets(inputBuffer, BUFSIZE, stdin) == NULL) {
-            if (feof(stdin)) {
-                printf("\n");
-                break; 
-            } else {
-                perror("Input error");
-                exit(EXIT_FAILURE);
-            }
-        }
+		command[strcspn(command, "\n")] = '\0';
 
-        inputBuffer[strcspn(inputBuffer, "\n")] = '\0';
+		pid = fork();
 
-        pid = fork();
-        if (pid == -1) {
-            perror("fork error");
-            exit(EXIT_FAILURE);
-        } else if (pid == 0) {
-            if (execlp(inputBuffer, inputBuffer, NULL) == -1) {
-                perror("Command execution error");
-                exit(EXIT_FAILURE);
-            }
-        } else {
-            wait(&status);
-        }
-    }
+		if (pid < 0)
+		{
+			perror("Fork failed");
+			exit(EXIT_FAILURE);
+		}
+		else if (pid == 0)
+		{
+			if (execlp(command, command, NULL) == -1)
+			{
+				printf("%s: No such file or directory\n", command);
+				exit(EXIT_FAILURE);
+			}
+		}
+		else
+		{
+			waitpid(pid, &status, 0);
+		}
+	}
 
-    return status;
+	return (0);
 }
