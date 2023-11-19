@@ -1,13 +1,17 @@
 #include "shell.h"
+
+extern char **environ;
 /**
  * execute_command - excutes command
  * @command: Command.
+ * @av: argument vector
  * Return: Return nothing.
  */
 void execute_command(char *command, char **av)
 {
 	int status;
 	pid_t pid = fork();
+	char **envVariables = environ;
 
 	if (pid < 0)
 	{
@@ -16,7 +20,7 @@ void execute_command(char *command, char **av)
 	}
 	else if (pid == 0)
 	{
-		if (execve(command, av, NULL) == -1)
+		if (execve(command, av, envVariables) == -1)
 		{
 			printf("%s: No such file or directory\n", command);
 			exit(EXIT_FAILURE);
@@ -31,6 +35,8 @@ void execute_command(char *command, char **av)
 /**
  * main- ENtry point.
  *
+ * @argc: Number of arguments
+ * @av: argument vector
  * Return: Nothing.
  */
 int main(int argc, char **av)
@@ -38,7 +44,7 @@ int main(int argc, char **av)
 	char *command = NULL;
 	size_t len = 0;
 	ssize_t nread;
-	
+
 	(void)argc;
 
 	while (1)
