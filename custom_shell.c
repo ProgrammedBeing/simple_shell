@@ -4,6 +4,7 @@
 int main(int argc, char **av)
 {
 	int status;
+	char *command = NULL;
 	char *line = NULL;
 	size_t len = 0;
 	ssize_t nread;
@@ -29,6 +30,12 @@ int main(int argc, char **av)
 		}
 
 		line[strcspn(line, "\n")] = '\0';
+
+		/* Extract the command (first worf) from the input line */
+		command = strtok(line, " ");
+
+		if (command == NULL)
+			continue;
 
 		if (strcasecmp(line, "exit") == 0)
 		{
