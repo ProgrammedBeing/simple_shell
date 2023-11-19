@@ -1,4 +1,4 @@
-#include "main.h"
+#include "shell.h"
 /**
  * execute_command - excutes command
  * @command: Command.
@@ -16,7 +16,7 @@ void execute_command(char *command)
 	}
 	else if (pid == 0)
 	{
-		if (execlp(command, command, NULL) == -1)
+		if (execve(command, av, NULL) == -1)
 		{
 			printf("%s: No such file or directory\n", command);
 			exit(EXIT_FAILURE);
@@ -33,8 +33,9 @@ void execute_command(char *command)
  *
  * Return: Nothing.
  */
-int main(void)
+int main(int argc, char **av)
 {
+	(void)argc;
 	char *command = NULL;
 	size_t len = 0;
 	ssize_t nread;
