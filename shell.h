@@ -6,5 +6,5 @@
 #include <sys/wait.h>
 #include <string.h>
 #include <stdio.h>
-void execute_command(char *command);
+void execute_command(char *command, char **av);
 #endif

@@ -4,7 +4,7 @@
  * @command: Command.
  * Return: Return nothing.
  */
-void execute_command(char *command)
+void execute_command(char *command, char **av)
 {
 	int status;
 	pid_t pid = fork();
@@ -35,10 +35,11 @@ void execute_command(char *command)
  */
 int main(int argc, char **av)
 {
-	(void)argc;
 	char *command = NULL;
 	size_t len = 0;
 	ssize_t nread;
+	
+	(void)argc;
 
 	while (1)
 	{
@@ -51,7 +52,7 @@ int main(int argc, char **av)
 		}
 		if (command[nread - 1] == '\n')
 			command[nread - 1] = '\0';
-		execute_command(command);
+		execute_command(command, av);
 	}
 	free(command);
 	return (0);
