@@ -1,7 +1,8 @@
 #include "main.h"
 #define BUFSIZE 1024
 
-void printPrompt(void) {
+void printPrompt(void) 
+{
     printf("#cisfun$ ");
 }
 
