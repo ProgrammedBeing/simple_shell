@@ -1,73 +1,44 @@
 #include "main.h"
-#include <stdio.h>
+#define BUFSIZE 1024
 
-int main(int argc, char **av)
+void printPrompt() {
+    printf("#cisfun$ ");
+}
+
+int main(void) 
 {
-	int status;
-	char *command = NULL;
-	char *line = NULL;
-	size_t len = 0;
-	ssize_t nread;
 	pid_t pid;
-	(void)argc;
+    char inputBuffer[BUFSIZE];
+    int status = 0;
 
-	while (1)
-	{
-		printf("#cisfun$ ");
+    while (1) {
+        printPrompt();
 
-		if ((nread = getline(&line, &len, stdin)) == -1)
-		{
-			if (feof(stdin))
-			{
-				printf("\n");
-				break;
-			}
-			else
-			{
-				perror("getline Error");
-				exit(EXIT_FAILURE);
-			}
-		}
+        if (fgets(inputBuffer, BUFSIZE, stdin) == NULL) {
+            if (feof(stdin)) {
+                printf("\n");
+                break; 
+            } else {
+                perror("Input error");
+                exit(EXIT_FAILURE);
+            }
+        }
 
-		line[strcspn(line, "\n")] = '\0';
+        inputBuffer[strcspn(inputBuffer, "\n")] = '\0';
 
-		/* Extract the command (first worf) from the input line */
-		command = strtok(line, " ");
+        pid = fork();
+        if (pid == -1) {
+            perror("fork error");
+            exit(EXIT_FAILURE);
+        } else if (pid == 0) {
+            if (execlp(inputBuffer, inputBuffer, NULL) == -1) {
+                perror("Command execution error");
+                exit(EXIT_FAILURE);
+            }
+        } else {
+            wait(&status);
+        }
+    }
 
-		if (command == NULL)
-			continue;
-
-		if (strcasecmp(line, "exit") == 0)
-		{
-			printf("\n");
-			break;
-		}
-
-		pid = fork();
-		if (pid == -1)
-		{
-			perror("fork error");
-			exit(EXIT_FAILURE);
-		}
-
-		if (pid == 0)
-		{
-			if ((execvp(line, av)) == -1)
-			{
-				printf("%s: No such file or directory\n", av[0]);
-				exit(EXIT_FAILURE);
-			}
-		}
-		else
-		{
-			if (waitpid(pid, &status, 0) == -1)
-			{
-				perror("waitppid error");
-				exit(EXIT_FAILURE);
-			}
-		}
-	}
-
-	free(line);
-	return (0);
+    return status;
 }
