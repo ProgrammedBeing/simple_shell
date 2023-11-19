@@ -8,19 +8,25 @@
 int main(void)
 {
 	pid_t pid;
-	char command[100];
+	char *command = NULL;
+	size_t len = 0;
+	ssize_t nread;
 	int status;
 
 	while (1)
 	{
 		printf("#cisfun$ ");
-		if (fgets(command, sizeof(command), stdin) == NULL)
+
+		nread = getline(&command, &len, stdin);
+
+		if (nread <= 0)
 		{
 			printf("\n");
 			break;
 		}
 
-		command[strcspn(command, "\n")] = '\0';
+		if (command[nread - 1] == '\n')
+			command[nread - 1] = '\0';
 
 		pid = fork();
 
@@ -43,5 +49,6 @@ int main(void)
 		}
 	}
 
+	free(command);
 	return (0);
 }
