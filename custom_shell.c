@@ -7,6 +7,8 @@ int main(int argc, char **av)
 	char *line = NULL;
 	size_t len = 0;
 	ssize_t nread;
+	pid_t pid;
+	(void)argc;
 
 	while (1)
 	{
@@ -34,7 +36,7 @@ int main(int argc, char **av)
 			break;
 		}
 
-		pid_t pid = fork();
+		pid = fork();
 		if (pid == -1)
 		{
 			perror("fork error");
